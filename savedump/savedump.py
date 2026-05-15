@@ -106,8 +106,15 @@ def get_dump_type(path: str) -> Optional[DumpType]:
     if not success:
         sys.exit(output)
 
+    #
+    # Case-insensitive substring match: `file(1)` reports flattened
+    # kdumps as "Flattened kdump compressed dump" (lowercase 'k') while
+    # non-flattened dumps are still labeled "Kdump compressed dump"
+    # (capital 'K'). Comparing both sides as lowercase recognizes both.
+    #
+    output_lower = output.lower()
     for dump_type in DumpType:
-        if dump_type.value in output:
+        if dump_type.value.lower() in output_lower:
             return dump_type
     return None
 
